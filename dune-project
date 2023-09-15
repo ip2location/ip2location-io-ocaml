@@ -5,6 +5,7 @@
 (version 1.0.0)
 
 (generate_opam_files true)
+(implicit_transitive_deps false)
 
 (source
  (github ip2location/ip2location-io-ocaml))

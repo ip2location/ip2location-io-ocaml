@@ -1,0 +1,4 @@
+(library
+ (public_name ip2locationio)
+ (name ip2locationio)
+ (libraries lwt cohttp cohttp-lwt-unix yojson))

@@ -23,7 +23,6 @@ module Ip_geolocation = struct
   let call_api (config: Configuration.config) ip lang =
     let lang_str = if lang == "" then "" else "&lang=" ^ lang in
     let uri = Uri.of_string ("https://api.ip2location.io/?key=" ^ config.api_key ^ "&format=" ^ config.format ^ "&source=" ^ config.source ^ "&source_version=" ^ config.source_version ^ "&ip=" ^ ip ^ lang_str) in
-    
     Lwt_main.run begin
       Client.get uri >>= fun (resp, body) ->
         let code = resp |> Response.status |> Code.code_of_status in
@@ -43,7 +42,6 @@ end
 module Domain_whois = struct
   let call_api (config: Configuration.config) domain =
     let uri = Uri.of_string ("https://api.ip2whois.com/v2?key=" ^ config.api_key ^ "&format=" ^ config.format ^ "&source=" ^ config.source ^ "&source_version=" ^ config.source_version ^ "&domain=" ^ domain) in
-    
     Lwt_main.run begin
       Client.get uri >>= fun (resp, body) ->
         let code = resp |> Response.status |> Code.code_of_status in

@@ -3,10 +3,10 @@ open Ip2locationio
 
 exception Ws_exception of string
 
-let my_config = Configuration.init "YOUR_API_KEY";;
+let my_config = Configuration.init "42C7FD7CA1510D05B22E24DDED0E0534";; (* need actual key to pass OCaml repo automated testing *)
 
 let my_ip = "8.8.8.8";;
-let my_lang = "es";; (* language only supported in Plus and Security plans, so leave as blank if not needed *)
+let my_lang = "";; (* language only supported in Plus and Security plans, so leave as blank if not needed *)
 let code, json = Ip_geolocation.lookup my_config my_ip my_lang;;
 
 let open Yojson.Basic.Util in

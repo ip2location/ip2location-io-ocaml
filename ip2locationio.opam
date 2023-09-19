@@ -12,11 +12,14 @@ homepage: "https://github.com/ip2location/ip2location-io-ocaml"
 doc: "https://github.com/ip2location/ip2location-io-ocaml"
 bug-reports: "https://github.com/ip2location/ip2location-io-ocaml/issues"
 depends: [
-  "ocaml" {>= "4.08"}
+  "ocaml" {>= "4.13"}
   "dune" {>= "3.4"}
   "lwt"
+  "lwt.unix"
   "cohttp"
   "cohttp-lwt-unix"
+  "tls-lwt" {with-test}
+  "uri"
   "yojson" {>= "1.6.0"}
   "odoc" {with-doc}
 ]

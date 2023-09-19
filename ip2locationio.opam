@@ -15,7 +15,6 @@ depends: [
   "ocaml" {>= "4.13"}
   "dune" {>= "3.4"}
   "lwt"
-  "lwt.unix"
   "cohttp"
   "cohttp-lwt-unix"
   "tls-lwt" {with-test}

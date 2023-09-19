@@ -3,7 +3,7 @@ open Ip2locationio
 
 exception Ws_exception of string
 
-let my_config = Configuration.init "42C7FD7CA1510D05B22E24DDED0E0534";; (* need actual key to pass OCaml repo automated testing *)
+let my_config = Configuration.init "YOUR_API_KEY";;
 
 let my_ip = "8.8.8.8";;
 let my_lang = "";; (* language only supported in Plus and Security plans, so leave as blank if not needed *)

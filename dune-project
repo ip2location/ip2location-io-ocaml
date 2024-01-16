@@ -22,7 +22,14 @@
  (name ip2locationio)
  (synopsis "IP2Location.io OCaml module to get geolocation and WHOIS data")
  (description "IP2Location.io OCaml module allows user to query for an enriched data set based on IP address and provides WHOIS lookup api that helps users to obtain domain information. ")
- (depends (ocaml (>= "4.13")) dune lwt lwt.unix cohttp cohttp-lwt-unix uri (yojson (>= "1.6.0")))
+ (depends
+   (ocaml (>= "4.13"))
+   dune
+   lwt
+   cohttp
+   cohttp-lwt-unix
+   uri
+   (yojson (>= "1.6.0")))
  (tags (ip2locationio geolocation)))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

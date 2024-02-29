@@ -227,6 +227,10 @@ begin
     printf "proxy_is_web_crawler: %b\n" proxy_is_web_crawler;
     let proxy_is_residential_proxy = json |> member "proxy" |> member "is_residential_proxy" |> to_bool in
     printf "proxy_is_residential_proxy: %b\n" proxy_is_residential_proxy;
+    let proxy_is_consumer_privacy_network = json |> member "proxy" |> member "is_consumer_privacy_network" |> to_bool in
+    printf "proxy_is_consumer_privacy_network: %b\n" proxy_is_consumer_privacy_network;
+    let proxy_is_enterprise_private_network = json |> member "proxy" |> member "is_enterprise_private_network" |> to_bool in
+    printf "proxy_is_enterprise_private_network: %b\n" proxy_is_enterprise_private_network;
     let proxy_is_spammer = json |> member "proxy" |> member "is_spammer" |> to_bool in
     printf "proxy_is_spammer: %b\n" proxy_is_spammer;
     let proxy_is_scanner = json |> member "proxy" |> member "is_scanner" |> to_bool in
@@ -481,6 +485,8 @@ Response Parameter
 |proxy.is_spammer|boolean|Email and forum spammers.|
 |proxy.is_scanner|boolean|Network security scanners.|
 |proxy.is_botnet|boolean|Malware infected devices.|
+|proxy.is_consumer_privacy_network|boolean|Consumer Privacy Networks.|
+|proxy.is_enterprise_private_network|boolean|Enterprise Private Networks.|
 
 ```json
 {
@@ -586,6 +592,8 @@ Response Parameter
     "is_web_proxy": false,
     "is_web_crawler": false,
     "is_residential_proxy": false,
+    "is_consumer_privacy_network":false,
+    "is_enterprise_private_network":false,
     "is_spammer": false,
     "is_scanner": false,
     "is_botnet": false

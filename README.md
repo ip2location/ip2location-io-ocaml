@@ -89,6 +89,8 @@ begin
   printf "ads_category_name: %s\n" ads_category_name;
   let is_proxy = json |> member "is_proxy" |> to_bool in
   printf "is_proxy: %b\n" is_proxy;
+  let fraud_score = if json |> member "fraud_score" = `Null then 0 else json |> member "fraud_score" |> to_int in
+  printf "fraud_score: %d\n" fraud_score;
   
   (* continent addon *)
   if (member "continent" json) <> `Null
@@ -101,10 +103,14 @@ begin
     let continent_hemisphere = json |> member "continent" |> member "hemisphere" |> to_list |> List.map (fun x -> x |> to_string) in
     print_endline "continent_hemisphere:";
     List.iter (fun x -> x |> print_endline) continent_hemisphere;
-    let continent_translation_lang = json |> member "continent" |> member "translation" |> member "lang" |> to_string in
-    printf "continent_translation_lang: %s\n" continent_translation_lang;
-    let continent_translation_value = json |> member "continent" |> member "translation" |> member "value" |> to_string in
-    printf "continent_translation_value: %s\n" continent_translation_value;
+    if (json |> member "continent" |> member "translation" |> member "lang") <> `Null
+    then
+    begin
+      let continent_translation_lang = json |> member "continent" |> member "translation" |> member "lang" |> to_string in
+      printf "continent_translation_lang: %s\n" continent_translation_lang;
+      let continent_translation_value = json |> member "continent" |> member "translation" |> member "value" |> to_string in
+      printf "continent_translation_value: %s\n" continent_translation_value;
+    end;
   end;
   
   (* country addon *)
@@ -139,10 +145,14 @@ begin
     printf "country_language_code: %s\n" country_language_code;
     let country_language_name = json |> member "country" |> member "language" |> member "name" |> to_string in
     printf "country_language_name: %s\n" country_language_name;
-    let country_translation_lang = json |> member "country" |> member "translation" |> member "lang" |> to_string in
-    printf "country_translation_lang: %s\n" country_translation_lang;
-    let country_translation_value = json |> member "country" |> member "translation" |> member "value" |> to_string in
-    printf "country_translation_value: %s\n" country_translation_value;
+    if (json |> member "country" |> member "translation" |> member "lang") <> `Null
+    then
+    begin
+      let country_translation_lang = json |> member "country" |> member "translation" |> member "lang" |> to_string in
+      printf "country_translation_lang: %s\n" country_translation_lang;
+      let country_translation_value = json |> member "country" |> member "translation" |> member "value" |> to_string in
+      printf "country_translation_value: %s\n" country_translation_value;
+    end;
   end;
   
   (* region addon *)
@@ -153,10 +163,14 @@ begin
     printf "region_name: %s\n" region_name;
     let region_code = json |> member "region" |> member "code" |> to_string in
     printf "region_code: %s\n" region_code;
-    let region_translation_lang = json |> member "region" |> member "translation" |> member "lang" |> to_string in
-    printf "region_translation_lang: %s\n" region_translation_lang;
-    let region_translation_value = json |> member "region" |> member "translation" |> member "value" |> to_string in
-    printf "region_translation_value: %s\n" region_translation_value;
+    if (json |> member "region" |> member "translation" |> member "lang") <> `Null
+    then
+    begin
+      let region_translation_lang = json |> member "region" |> member "translation" |> member "lang" |> to_string in
+      printf "region_translation_lang: %s\n" region_translation_lang;
+      let region_translation_value = json |> member "region" |> member "translation" |> member "value" |> to_string in
+      printf "region_translation_value: %s\n" region_translation_value;
+    end;
   end;
   
   (* city addon *)
@@ -471,6 +485,7 @@ Response Parameter
 |ads_category|string|The domain category code based on IAB Tech Lab Content Taxonomy.|
 |ads_category_name|string|The domain category based on IAB Tech Lab Content Taxonomy. These categories are comprised of Tier-1 and Tier-2 (if available) level categories widely used in services like advertising, Internet security and filtering appliances.|
 |is_proxy|boolean|Whether is a proxy or not.|
+|fraud_score|integer|Potential risk score (0 - 99) associated with IP address. A higher IP2Proxy Fraud Score indicates a greater likelihood of fraudulent activity and a lower reputation.|
 |proxy.last_seen|integer|Proxy last seen in days.|
 |proxy.proxy_type|string|Type of proxy.|
 |proxy.threat|string|Security threat reported.|
@@ -580,6 +595,7 @@ Response Parameter
   "ads_category": "IAB19-11",
   "ads_category_name": "Data Centers",
   "is_proxy": false,
+  "fraud_score": 0,
   "proxy": {
     "last_seen": 3,
     "proxy_type": "DCH",

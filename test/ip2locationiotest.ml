@@ -6,7 +6,7 @@ exception Ws_exception of string
 let my_config = Configuration.init "YOUR_API_KEY";;
 
 let my_ip = "8.8.8.8";;
-let my_lang = "";; (* language only supported in Plus and Security plans, so leave as blank if not needed *)
+let my_lang = "fr";; (* language only supported in Plus and Security plans, so leave as blank if not needed *)
 let code, json = Ip_geolocation.lookup my_config my_ip my_lang;;
 
 let open Yojson.Basic.Util in
@@ -69,6 +69,8 @@ begin
   printf "ads_category_name: %s\n" ads_category_name;
   let is_proxy = json |> member "is_proxy" |> to_bool in
   printf "is_proxy: %b\n" is_proxy;
+  let fraud_score = if json |> member "fraud_score" = `Null then 0 else json |> member "fraud_score" |> to_int in
+  printf "fraud_score: %d\n" fraud_score;
   
   (* continent addon *)
   if (member "continent" json) <> `Null
@@ -81,10 +83,14 @@ begin
     let continent_hemisphere = json |> member "continent" |> member "hemisphere" |> to_list |> List.map (fun x -> x |> to_string) in
     print_endline "continent_hemisphere:";
     List.iter (fun x -> x |> print_endline) continent_hemisphere;
-    let continent_translation_lang = json |> member "continent" |> member "translation" |> member "lang" |> to_string in
-    printf "continent_translation_lang: %s\n" continent_translation_lang;
-    let continent_translation_value = json |> member "continent" |> member "translation" |> member "value" |> to_string in
-    printf "continent_translation_value: %s\n" continent_translation_value;
+    if (json |> member "continent" |> member "translation" |> member "lang") <> `Null
+    then
+    begin
+      let continent_translation_lang = json |> member "continent" |> member "translation" |> member "lang" |> to_string in
+      printf "continent_translation_lang: %s\n" continent_translation_lang;
+      let continent_translation_value = json |> member "continent" |> member "translation" |> member "value" |> to_string in
+      printf "continent_translation_value: %s\n" continent_translation_value;
+    end;
   end;
   
   (* country addon *)
@@ -119,10 +125,14 @@ begin
     printf "country_language_code: %s\n" country_language_code;
     let country_language_name = json |> member "country" |> member "language" |> member "name" |> to_string in
     printf "country_language_name: %s\n" country_language_name;
-    let country_translation_lang = json |> member "country" |> member "translation" |> member "lang" |> to_string in
-    printf "country_translation_lang: %s\n" country_translation_lang;
-    let country_translation_value = json |> member "country" |> member "translation" |> member "value" |> to_string in
-    printf "country_translation_value: %s\n" country_translation_value;
+    if (json |> member "country" |> member "translation" |> member "lang") <> `Null
+    then
+    begin
+      let country_translation_lang = json |> member "country" |> member "translation" |> member "lang" |> to_string in
+      printf "country_translation_lang: %s\n" country_translation_lang;
+      let country_translation_value = json |> member "country" |> member "translation" |> member "value" |> to_string in
+      printf "country_translation_value: %s\n" country_translation_value;
+    end;
   end;
   
   (* region addon *)
@@ -133,10 +143,14 @@ begin
     printf "region_name: %s\n" region_name;
     let region_code = json |> member "region" |> member "code" |> to_string in
     printf "region_code: %s\n" region_code;
-    let region_translation_lang = json |> member "region" |> member "translation" |> member "lang" |> to_string in
-    printf "region_translation_lang: %s\n" region_translation_lang;
-    let region_translation_value = json |> member "region" |> member "translation" |> member "value" |> to_string in
-    printf "region_translation_value: %s\n" region_translation_value;
+    if (json |> member "region" |> member "translation" |> member "lang") <> `Null
+    then
+    begin
+      let region_translation_lang = json |> member "region" |> member "translation" |> member "lang" |> to_string in
+      printf "region_translation_lang: %s\n" region_translation_lang;
+      let region_translation_value = json |> member "region" |> member "translation" |> member "value" |> to_string in
+      printf "region_translation_value: %s\n" region_translation_value;
+    end;
   end;
   
   (* city addon *)

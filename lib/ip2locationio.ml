@@ -12,7 +12,7 @@ module Configuration = struct
   }
   
   let init api_key = {
-    source_version = "1.0.0";
+    source_version = "1.0.1";
     api_key = api_key;
     format = "json";
     source = "sdk-ocaml-iplio"

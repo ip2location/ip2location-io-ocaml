@@ -2,7 +2,7 @@
 
 (name ip2locationio)
 
-(version 1.0.1)
+(version 1.1.0)
 
 (generate_opam_files true)
 (implicit_transitive_deps false)

@@ -22,3 +22,8 @@ module Domain_whois :
     val get_domain_extension :
       string -> string
   end
+module Hosted_domain :
+  sig
+    val lookup :
+      Configuration.config -> string -> int -> int * Yojson.Basic.t
+  end

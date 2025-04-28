@@ -1,8 +1,10 @@
 IP2Location.io OCaml SDK
 =========================
-This OCaml package enables user to query for an enriched data set, such as country, region, district, city, latitude & longitude, ZIP code, time zone, ASN, ISP, domain, net speed, IDD code, area code, weather station data, MNC, MCC, mobile brand, elevation, usage type, address type, advertisement category and proxy data with an IP address. It supports both IPv4 and IPv6 address lookup.
+This OCaml package enables user to query for an enriched data set, such as country, region, district, city, latitude & longitude, ZIP code, time zone, ASN, ISP, domain, net speed, IDD code, area code, weather station data, MNC, MCC, mobile brand, elevation, usage type, address type, advertisement category, fraud score and proxy data with an IP address. It supports both IPv4 and IPv6 address lookup.
 
 In addition, this package provides WHOIS lookup api that helps users to obtain domain information, WHOIS record, by using a domain name. The WHOIS API returns a comprehensive WHOIS data such as creation date, updated date, expiration date, domain age, the contact information of the registrant, mailing address, phone number, email address, nameservers the domain is using and much more.
+
+There is also a Hosted Domain API that allowing users to get the list of hosted domain names by IP address in real time. The REST API supports both IPv4 and IPv6 address lookup.
 
 This package requires API key to function. You may sign up for a free API key at https://www.ip2location.io/pricing.
 
@@ -423,6 +425,46 @@ let domain_extension = Domain_whois.get_domain_extension "example.com";;
 printf "domain_extension: %s\n" domain_extension;;
 ```
 
+### Lookup IP Address Hosted Domains Data
+```ocaml
+open Printf
+open Ip2locationio
+
+exception Ws_exception of string
+
+let my_config = Configuration.init "YOUR_API_KEY";;
+
+let my_ip = "8.8.8.8";;
+let my_page = 1;;
+let code, json = Hosted_domain.lookup my_config my_ip my_page;;
+
+let open Yojson.Basic.Util in
+if code == 200
+then
+begin
+  let ip = json |> member "ip" |> to_string in
+  printf "ip: %s\n" ip;
+  let total_domains = json |> member "total_domains" |> to_int in
+  printf "total_domains: %d\n" total_domains;
+  let page = json |> member "page" |> to_int in
+  printf "page: %d\n" page;
+  let per_page = json |> member "per_page" |> to_int in
+  printf "per_page: %d\n" per_page;
+  let total_pages = json |> member "total_pages" |> to_int in
+  printf "total_pages: %d\n" total_pages;
+  let domains = json |> member "domains" |> to_list |> List.map (fun x -> x |> to_string) in
+  print_endline "domains:";
+  List.iter (fun x -> x |> print_endline) domains;
+end
+else if (code == 400 || code == 401) && ((member "error" json) <> `Null)
+then
+begin
+  let error_message = json |> member "error" |> member "error_message" |> to_string in
+  raise (Ws_exception ("error_message: " ^ error_message));
+end
+else
+  raise (Ws_exception ("HTTP Code: " ^ (Int.to_string code)))
+```
 
 Response Parameter
 ============
@@ -740,6 +782,127 @@ Response Parameter
 }
 ```
 
+### IP Hosted Domains Lookup function
+| Parameter | Type | Description |
+|---|---|---|
+|ip|string|IP address.|
+|total_domains|integer|Total number of hosted domains found.|
+|page|integer|Current lookup page.|
+|per_page|integer|Number of domains displayed in the page.|
+|total_pages|integer|Total pages of the hosted domains.|
+|domains|array|Hosted domains of the lookup IP Address.|
+
+```json
+{
+  "ip": "8.8.8.8",
+  "total_domains": 3858,
+  "page": 1,
+  "per_page": 100,
+  "total_pages": 39,
+  "domains": [
+    "000180.top",
+    "00100tet.xyz",
+    "001hash.vip",
+    "002hash.com",
+    "0050500.xyz",
+    "007515.com",
+    "023mm.net",
+    "023mt.net",
+    "023sn.net",
+    "031000.xyz",
+    "0515smw.com",
+    "058637.com",
+    "0798907.xyz",
+    "07capital.com",
+    "07osrs.com",
+    "07sh2wv.bar",
+    "0857.site",
+    "0931seo.com",
+    "0lzh.com",
+    "0x4f.com",
+    "0x57696c6c.com",
+    "0xb055.com",
+    "1-189tais.com",
+    "10askfcwebkvh.top",
+    "1102halfhowehbao1.com",
+    "1102hdfkeuwuhfubao2.com",
+    "1102hdukefjkf2.com",
+    "1102sdbkwuoubao3.com",
+    "11107hdkjhguk.com",
+    "111km.xyz",
+    "1130kfhuhw.com",
+    "11eqlhon.top",
+    "1206m.site",
+    "125ap.com",
+    "12la21wn31da40le6.com",
+    "12safhoie.top",
+    "12tivi.com",
+    "1333limited.com",
+    "1333yyh.com",
+    "135493.com",
+    "136668.xyz",
+    "13shkuwq.top",
+    "142937440.site",
+    "144888.xyz",
+    "14whoduhw.top",
+    "1562yjargm.xyz",
+    "15sdkwb.top",
+    "167853.xyz",
+    "168.one",
+    "168km.xyz",
+    "16uhwfuhe.cyou",
+    "176274.com",
+    "17diqwehfoi.cyou",
+    "17jule.com",
+    "18uhefoh.cyou",
+    "191095211.xyz",
+    "19931006.xyz",
+    "19g.vip",
+    "19wuji.cyou",
+    "1huofhoehfogakfwqqq.com",
+    "1ine1.com",
+    "1master-fitness.com",
+    "1rf3k.com",
+    "1s1s.app",
+    "1visualizer.app",
+    "200250.xyz",
+    "20070217.xyz",
+    "20088888.xyz",
+    "20230406.mov",
+    "205566.com",
+    "205artemisbet.com",
+    "20iiij.cyou",
+    "21107ahsfukhweo.com",
+    "21hodheoh.cyou",
+    "22bahman.space",
+    "22howhw.cyou",
+    "231q.top",
+    "234n.top",
+    "236j.top",
+    "23hw.cyou",
+    "24asfbkhb.cyou",
+    "24ihhcorp.com",
+    "25dgfu.cyou",
+    "26asfhku.cyou",
+    "277210.shop",
+    "27adfljn.cyou",
+    "28dshkf.cyou",
+    "29583.biz",
+    "29dakfb.cyou",
+    "2ashdowehofhweohfo.com",
+    "2c.com",
+    "2qdrap.com",
+    "2s1c.com",
+    "304065117.xyz",
+    "30fwhdfkb.cyou",
+    "3101r.space",
+    "31107abskjfbekb.com",
+    "315sx.com",
+    "31dfhkjsdb.cyou",
+    "325965.com"
+  ]
+}
+```
 
 LICENCE
 =====================

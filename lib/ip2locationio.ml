@@ -12,7 +12,7 @@ module Configuration = struct
   }
   
   let init api_key = {
-    source_version = "1.0.1";
+    source_version = "1.1.0";
     api_key = api_key;
     format = "json";
     source = "sdk-ocaml-iplio"
@@ -92,4 +92,23 @@ module Domain_whois = struct
       let index = String.index domain '.' in
       String.sub domain index (String.length domain - index)
     end
+end
+
+module Hosted_domain = struct
+  let call_api (config: Configuration.config) ip page =
+    let uri = Uri.of_string ("https://domains.ip2whois.com/domains?key=" ^ config.api_key ^ "&format=" ^ config.format ^ "&source=" ^ config.source ^ "&source_version=" ^ config.source_version ^ "&ip=" ^ ip ^ "&page=" ^ string_of_int page) in
+    Lwt_main.run begin
+      Client.get uri >>= fun (resp, body) ->
+        let code = resp |> Response.status |> Code.code_of_status in
+        let json_promise = body |> Cohttp_lwt.Body.to_string in
+        json_promise >>= (fun json_string ->
+          return (code, json_string)
+        )
+    end
+  
+  (** Call the API to get hosted domains info *)
+  let lookup config ip page =
+    let code, json_string = call_api config ip page in
+    let json = Basic.from_string json_string in
+    (code, json)
 end

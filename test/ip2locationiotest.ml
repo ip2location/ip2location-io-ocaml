@@ -371,3 +371,34 @@ printf "domain_name: %s\n" domain_name;;
 
 let domain_extension = Domain_whois.get_domain_extension "example.com";;
 printf "domain_extension: %s\n" domain_extension;;
+
+let my_ip = "8.8.8.8";;
+let my_page = 1;;
+let code, json = Hosted_domain.lookup my_config my_ip my_page;;
+
+let open Yojson.Basic.Util in
+if code == 200
+then
+begin
+  let ip = json |> member "ip" |> to_string in
+  printf "ip: %s\n" ip;
+  let total_domains = json |> member "total_domains" |> to_int in
+  printf "total_domains: %d\n" total_domains;
+  let page = json |> member "page" |> to_int in
+  printf "page: %d\n" page;
+  let per_page = json |> member "per_page" |> to_int in
+  printf "per_page: %d\n" per_page;
+  let total_pages = json |> member "total_pages" |> to_int in
+  printf "total_pages: %d\n" total_pages;
+  let domains = json |> member "domains" |> to_list |> List.map (fun x -> x |> to_string) in
+  print_endline "domains:";
+  List.iter (fun x -> x |> print_endline) domains;
+end
+else if (code == 400 || code == 401) && ((member "error" json) <> `Null)
+then
+begin
+  let error_message = json |> member "error" |> member "error_message" |> to_string in
+  raise (Ws_exception ("error_message: " ^ error_message));
+end
+else
+  raise (Ws_exception ("HTTP Code: " ^ (Int.to_string code)))

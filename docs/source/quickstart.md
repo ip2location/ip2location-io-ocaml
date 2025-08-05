@@ -253,6 +253,8 @@ begin
     printf "proxy_is_scanner: %b\n" proxy_is_scanner;
     let proxy_is_botnet = json |> member "proxy" |> member "is_botnet" |> to_bool in
     printf "proxy_is_botnet: %b\n" proxy_is_botnet;
+    let proxy_is_bogon = json |> member "proxy" |> member "is_bogon" |> to_bool in
+    printf "proxy_is_bogon: %b\n" proxy_is_bogon;
   end
 end
 else if (code == 400 || code == 401) && ((member "error" json) <> `Null)

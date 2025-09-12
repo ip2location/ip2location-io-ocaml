@@ -88,6 +88,22 @@ begin
   let fraud_score = if json |> member "fraud_score" = `Null then 0 else json |> member "fraud_score" |> to_int in
   printf "fraud_score: %d\n" fraud_score;
   
+  (* as_info addon *)
+  if (member "as_info" json) <> `Null
+  then
+  begin
+    let as_name = json |> member "as_info" |> member "as_name" |> to_string in
+    printf "as_name: %s\n" as_name;
+    let as_number = json |> member "as_info" |> member "as_number" |> to_string in
+    printf "as_number: %s\n" as_number;
+    let as_domain = json |> member "as_info" |> member "as_domain" |> to_string in
+    printf "as_domain: %s\n" as_domain;
+    let as_cidr = json |> member "as_info" |> member "as_cidr" |> to_string in
+    printf "as_cidr: %s\n" as_cidr;
+    let as_usage_type = json |> member "as_info" |> member "as_usage_type" |> to_string in
+    printf "as_usage_type: %s\n" as_usage_type;
+  end;
+  
   (* continent addon *)
   if (member "continent" json) <> `Null
   then

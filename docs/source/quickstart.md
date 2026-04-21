@@ -257,6 +257,8 @@ begin
     printf "proxy_is_web_proxy: %b\n" proxy_is_web_proxy;
     let proxy_is_web_crawler = json |> member "proxy" |> member "is_web_crawler" |> to_bool in
     printf "proxy_is_web_crawler: %b\n" proxy_is_web_crawler;
+    let proxy_is_ai_crawler = json |> member "proxy" |> member "is_ai_crawler" |> to_bool in
+    printf "proxy_is_ai_crawler: %b\n" proxy_is_ai_crawler;
     let proxy_is_residential_proxy = json |> member "proxy" |> member "is_residential_proxy" |> to_bool in
     printf "proxy_is_residential_proxy: %b\n" proxy_is_residential_proxy;
     let proxy_is_consumer_privacy_network = json |> member "proxy" |> member "is_consumer_privacy_network" |> to_bool in

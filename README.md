@@ -1,476 +1,313 @@
-IP2Location.io OCaml SDK
-=========================
-This OCaml package enables user to query for an enriched data set, such as country, region, district, city, latitude & longitude, ZIP code, time zone, ASN, ISP, domain, net speed, IDD code, area code, weather station data, MNC, MCC, mobile brand, elevation, usage type, address type, advertisement category, fraud score and proxy data with an IP address. It supports both IPv4 and IPv6 address lookup.
+# IP2Location.io OCaml SDK — IP Geolocation, Domain WHOIS & Hosted Domain Lookup
 
-In addition, this package provides WHOIS lookup api that helps users to obtain domain information, WHOIS record, by using a domain name. The WHOIS API returns a comprehensive WHOIS data such as creation date, updated date, expiration date, domain age, the contact information of the registrant, mailing address, phone number, email address, nameservers the domain is using and much more.
+[![GitHub repository](https://img.shields.io/badge/GitHub-ip2location--io--ocaml-181717?logo=github)](https://github.com/ip2location/ip2location-io-ocaml)
+[![Documentation](https://img.shields.io/badge/docs-Read%20the%20Docs-blue)](https://ip2location-io-ocaml.readthedocs.io/en/latest/index.html)
 
-There is also a Hosted Domain API that allowing users to get the list of hosted domain names by IP address in real time. The REST API supports both IPv4 and IPv6 address lookup.
+**IP2Location.io OCaml SDK** (`ip2locationio`) is an OCaml library for retrieving **IPv4 and IPv6 geolocation, network and IP intelligence data** through the [IP2Location.io API](https://www.ip2location.io/). It also supports **domain WHOIS lookup** and **hosted domain lookup**, allowing OCaml applications to access IP and domain information without manually implementing the API requests.
 
-This package requires API key to function. You may sign up for a free API key at https://www.ip2location.io/pricing.
+**Quick links:** [Get an API key](https://www.ip2location.io/pricing) · [Developer documentation](https://ip2location-io-ocaml.readthedocs.io/en/latest/index.html) · [API reference](https://ip2location-io-ocaml.readthedocs.io/en/latest/code.html) · [Official repository](https://github.com/ip2location/ip2location-io-ocaml)
 
-Developer Documentation
-=====================
+## Features
 
-To learn more about installation, usage, and code examples, please visit the developer documentation at [https://ip2location-io-ocaml.readthedocs.io/en/latest/index.html](https://ip2location-io-ocaml.readthedocs.io/en/latest/index.html).
+- **IPv4 and IPv6 geolocation:** Retrieve available country, region, district, city, ZIP/postal code, latitude, longitude and time zone.
+- **Network and ASN information:** Access available ASN, AS name, ISP, associated domain, connection type and usage type.
+- **Time zone and localization data:** Retrieve time zone information and request translated continent, country, region and city names on eligible plans.
+- **Proxy and security signals:** Access available proxy, VPN, Tor, data center, crawler and related signals, along with fraud scores where included in the API response.
+- **Additional IP intelligence:** Retrieve supported carrier, country, weather/elevation and advertising category fields.
+- **Domain WHOIS lookup:** Query available domain registration dates, registrar, nameservers and contact information.
+- **Domain utilities:** Extract a domain name from a URL or get a domain extension.
+- **Hosted domains:** Look up domains hosted on an IP address with page-based pagination.
+- **OCaml JSON responses:** Lookups return an HTTP status code and JSON data that can be inspected with `Yojson.Basic.Util`.
 
+> **Plan availability:** Fields and security signals vary by API plan and queried IP address. Translation data is available on Plus and Security plans. See [plan details](https://www.ip2location.io/pricing) and the [OCaml API reference](https://ip2location-io-ocaml.readthedocs.io/en/latest/code.html).
 
-Compilation
-============
+## SDK modules
+
+The OCaml quickstart demonstrates the following modules and functions:
+
+| Module or function | Description |
+| --- | --- |
+| [`Configuration.init api_key`](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html) | Creates the configuration from your API key. |
+| [`Ip_geolocation.lookup config ip lang`](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html) | Retrieves geolocation and available network/security data for an IPv4 or IPv6 address. |
+| [`Domain_whois.lookup config domain`](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html) | Retrieves available domain WHOIS information. |
+| [`Domain_whois.get_domain_name url`](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html) | Extracts a domain name from a URL. |
+| [`Domain_whois.get_domain_extension domain`](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html) | Gets the domain extension. |
+| [`Hosted_domain.lookup config ip page`](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html) | Retrieves hosted domains using an IP address and page number. |
+
+These are **OCaml module and function names**, which differ from the class-style names used in the API reference prose.
+
+## API access and query limits
+
+IP2Location.io offers keyless geolocation requests through its REST API and a Free plan with an API key:
+
+| API service | Keyless (no API key) | Free plan (with API key) |
+| --- | --- | --- |
+| IP Geolocation API | **1,000 queries/day** | **50,000 queries/month** |
+| Domain WHOIS API | — | **500 queries/month** |
+| Hosted Domain API | — | **50 queries/month** |
+
+- **Keyless access:** Available directly through the limited [IP Geolocation REST API](https://www.ip2location.io/ip2location-documentation), with a daily quota reset at **00:00 UTC**. The OCaml SDK documentation requires an API key and the examples below use one.
+- **Free plan:** Register for a free API key to use the published monthly quotas.
+- **Attribution:** Keyless and Free-plan usage require attribution. Consult the [pricing page](https://www.ip2location.io/pricing) for current conditions.
+- **Paid plans:** Refer to [pricing](https://www.ip2location.io/pricing) for increased quotas and additional fields.
+
+For authentication, keyless access and API rate limits, see the [IP Geolocation API documentation](https://www.ip2location.io/ip2location-documentation).
+
+## Requirements
+
+- **OCaml 4.13 or later**, according to the repository's [`ip2locationio.opam`](https://github.com/ip2location/ip2location-io-ocaml/blob/main/ip2locationio.opam).
+- **Dune 3.4 or later**.
+- [opam](https://opam.ocaml.org/) for managing the OCaml environment and dependencies.
+- Project dependencies declared in the package: `lwt`, `cohttp`, `cohttp-lwt-unix`, `uri`, and `yojson` (version 1.6.0 or later).
+- An [IP2Location.io API key](https://www.ip2location.io/pricing) for SDK calls and network access to the API services.
+
+## Installation
+
+The official repository documents building with `dune build`. The following workflow uses **opam and Dune** to set up the dependencies from the repository's package definition.
+
+### 1. Clone the SDK
+
+```bash
+git clone https://github.com/ip2location/ip2location-io-ocaml.git
+cd ip2location-io-ocaml
+```
+
+### 2. Install dependencies
+
+With OCaml and opam already installed, use an appropriate opam switch (OCaml 4.13 or newer), then install dependencies described in the local `.opam` file:
+
+```bash
+opam install . --deps-only
+```
+
+If your shell is not configured for the active opam switch, run `eval $(opam env)` on Linux/macOS before building. The command above installs dependencies; it does not publish or install the SDK as a separate package in another project.
+
+### 3. Build the SDK
+
 ```bash
 dune build
 ```
 
+This is the compilation command documented in the [official quickstart](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html).
 
-Usage Example
-============
+### 4. Configure your API key
 
-Refer to the [Sample Code section](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html#sample-codes)
+For application code, prefer reading an API key from your environment rather than committing it to source control.
 
-Response Parameter
-============
-### IP Geolocation Lookup function
-| Parameter | Type | Description |
-|---|---|---|
-|ip|string|IP address.|
-|country_code|string|Two-character country code based on ISO 3166.|
-|country_name|string|Country name based on ISO 3166.|
-|region_name|string|Region or state name.|
-|city_name|string|City name.|
-|latitude|double|City latitude. Defaults to capital city latitude if city is unknown.|
-|longitude|double|City longitude. Defaults to capital city longitude if city is unknown.|
-|zip_code|string|ZIP/Postal code.|
-|time_zone|string|UTC time zone (with DST supported).|
-|asn|string|Autonomous system number (ASN).|
-|as|string|Autonomous system (AS) name.|
-|isp|string|Internet Service Provider or company's name.|
-|domain|string|Internet domain name associated with IP address range.|
-|net_speed|string|Internet connection type. DIAL = dial-up, DSL = broadband/cable/fiber/mobile, COMP = company/T1|
-|idd_code|string|The IDD prefix to call the city from another country.|
-|area_code|string|A varying length number assigned to geographic areas for calls between cities.|
-|weather_station_code|string|The special code to identify the nearest weather observation station.|
-|weather_station_name|string|The name of the nearest weather observation station.|
-|mcc|string|Mobile Country Codes (MCC) as defined in ITU E.212 for use in identifying mobile stations in wireless telephone networks, particularly GSM and UMTS networks.|
-|mnc|string|Mobile Network Code (MNC) is used in combination with a Mobile Country Code (MCC) to uniquely identify a mobile phone operator or carrier.|
-|mobile_brand|string|Commercial brand associated with the mobile carrier.|
-|elevation|integer|Average height of city above sea level in meters (m).|
-|usage_type|string|Usage type classification of ISP or company.|
-|address_type|string|IP address types as defined in Internet Protocol version 4 (IPv4) and Internet Protocol version 6 (IPv6).|
-|continent.name|string|Continent name.|
-|continent.code|string|Two-character continent code.|
-|continent.hemisphere|array|The hemisphere of where the country located. The data in array format with first item indicates (north/south) hemisphere and second item indicates (east/west) hemisphere information.|
-|continent.translation|object|Translation data based on the given lang code.|
-|district|string|District or county name.|
-|country.name|string|Country name based on ISO 3166.|
-|country.alpha3_code|string|Three-character country code based on ISO 3166.|
-|country.numeric_code|string|Three-character country numeric code based on ISO 3166.|
-|country.demonym|string|Native of the country.|
-|country.flag|string|URL of the country flag image.|
-|country.capital|string|Capital of the country.|
-|country.total_area|integer|Total area in km2.|
-|country.population|integer|Population of the country.|
-|country.currency|object|Currency of the country.|
-|country.language|object|Language of the country.|
-|country.tld|string|Country-Code Top-Level Domain.|
-|country.translation|object|Translation data based on the given lang code.|
-|region.name|string|Region or state name.|
-|region.code|string|ISO3166-2 code.|
-|region.translation|object|Translation data based on the given lang code.|
-|city.name|string| City name.|
-|city.translation|object|Translation data based on the given lang code.|
-|time_zone_info.olson|string|Time zone in Olson format.|
-|time_zone_info.current_time|string|Current time in ISO 8601 format.|
-|time_zone_info.gmt_offset|integer|GMT offset value in seconds.|
-|time_zone_info.is_dst|boolean|Indicate if the time zone value is in DST.|
-|time_zone_info.abbreviation|string|The time zone abbreviation of the Olson time zone, for example EST and EEST.|
-|time_zone_info.dst_start_date|string|The date (UTC) of Daylight Saving Time (DST) begins.|
-|time_zone_info.dst_end_date|string|The date (UTC) of Daylight Saving Time (DST) ends.|
-|time_zone_info.sunrise|string|Time of sunrise. (hh:mm format in local time, i.e, 07:47)|
-|time_zone_info.sunset|string|Time of sunset. (hh:mm format in local time, i.e 19:50)|
-|geotargeting.metro|string|Metro code based on zip/postal code.|
-|ads_category|string|The domain category code based on IAB Tech Lab Content Taxonomy.|
-|ads_category_name|string|The domain category based on IAB Tech Lab Content Taxonomy. These categories are comprised of Tier-1 and Tier-2 (if available) level categories widely used in services like advertising, Internet security and filtering appliances.|
-|is_proxy|boolean|Whether is a proxy or not.|
-|fraud_score|integer|Potential risk score (0 - 99) associated with IP address. A higher IP2Proxy Fraud Score indicates a greater likelihood of fraudulent activity and a lower reputation.|
-|proxy.last_seen|integer|Proxy last seen in days.|
-|proxy.proxy_type|string|Type of proxy.|
-|proxy.threat|string|Security threat reported.|
-|proxy.provider|string|Name of VPN provider if available.|
-|proxy.is_vpn|boolean|Anonymizing VPN services.|
-|proxy.is_tor|boolean|Tor Exit Nodes.|
-|proxy.is_data_center|boolean|Hosting Provider, Data Center or Content Delivery Network.|
-|proxy.is_public_proxy|boolean|Public Proxies.|
-|proxy.is_web_proxy|boolean|Web Proxies.|
-|proxy.is_web_crawler|boolean|Search Engine Robots.|
-|proxy.is_ai_crawler|boolean|Specifically identifies IP addresses used by artificial intelligence companies to crawl the web for LLM training data or real-time retrieval (RAG).|
-|proxy.is_residential_proxy|boolean|Residential proxies.|
-|proxy.is_spammer|boolean|Email and forum spammers.|
-|proxy.is_scanner|boolean|Network security scanners.|
-|proxy.is_botnet|boolean|Malware infected devices.|
-|proxy.is_bogon|boolean|Unassigned or illegitimate IP addresses announced via BGP.|
-|proxy.is_consumer_privacy_network|boolean|Consumer Privacy Networks.|
-|proxy.is_enterprise_private_network|boolean|Enterprise Private Networks.|
+**Linux / macOS:**
 
-```json
-{
-  "ip": "8.8.8.8",
-  "country_code": "US",
-  "country_name": "United States of America",
-  "region_name": "California",
-  "city_name": "Mountain View",
-  "latitude": 37.405992,
-  "longitude": -122.078515,
-  "zip_code": "94043",
-  "time_zone": "-07:00",
-  "asn": "15169",
-  "as": "Google LLC",
-  "isp": "Google LLC",
-  "domain": "google.com",
-  "net_speed": "T1",
-  "idd_code": "1",
-  "area_code": "650",
-  "weather_station_code": "USCA0746",
-  "weather_station_name": "Mountain View",
-  "mcc": "-",
-  "mnc": "-",
-  "mobile_brand": "-",
-  "elevation": 32,
-  "usage_type": "DCH",
-  "address_type": "Anycast",
-  "continent": {
-    "name": "North America",
-    "code": "NA",
-    "hemisphere": [
-      "north",
-      "west"
-    ],
-    "translation": {
-      "lang": "es",
-      "value": "Norteamérica"
-    }
-  },
-  "district": "Santa Clara County",
-  "country": {
-    "name": "United States of America",
-    "alpha3_code": "USA",
-    "numeric_code": 840,
-    "demonym": "Americans",
-    "flag": "https://cdn.ip2location.io/assets/img/flags/us.png",
-    "capital": "Washington, D.C.",
-    "total_area": 9826675,
-    "population": 331002651,
-    "currency": {
-      "code": "USD",
-      "name": "United States Dollar",
-      "symbol": "$"
-    },
-    "language": {
-      "code": "EN",
-      "name": "English"
-    },
-    "tld": "us",
-    "translation": {
-      "lang": "es",
-      "value": "Estados Unidos de América (los)"
-    }
-  },
-  "region": {
-    "name": "California",
-    "code": "US-CA",
-    "translation": {
-      "lang": "es",
-      "value": "California"
-    }
-  },
-  "city": {
-    "name": "Mountain View",
-    "translation": {
-      "lang": null,
-      "value": null
-    }
-  },
-  "time_zone_info": {
-    "olson": "America/Los_Angeles",
-    "current_time": "2023-09-03T18:21:13-07:00",
-    "gmt_offset": -25200,
-    "is_dst": true,
-    "sunrise": "06:41",
-    "sunset": "19:33"
-  },
-  "geotargeting": {
-    "metro": "807"
-  },
-  "ads_category": "IAB19-11",
-  "ads_category_name": "Data Centers",
-  "is_proxy": false,
-  "fraud_score": 0,
-  "proxy": {
-    "last_seen": 3,
-    "proxy_type": "DCH",
-    "threat": "-",
-    "provider": "-",
-    "is_vpn": false,
-    "is_tor": false,
-    "is_data_center": true,
-    "is_public_proxy": false,
-    "is_web_proxy": false,
-    "is_web_crawler": false,
-    "is_ai_crawler": false,
-    "is_residential_proxy": false,
-    "is_consumer_privacy_network":false,
-    "is_enterprise_private_network":false,
-    "is_spammer": false,
-    "is_scanner": false,
-    "is_botnet": false
-    "is_bogon": false
-  }
-}
+```bash
+export IP2LOCATION_API_KEY='YOUR_API_KEY'
 ```
 
-### Domain WHOIS Lookup function
-| Parameter | Type | Description |
-|---|---|---|
-|domain|string|Domain name.|
-|domain_id|string|Domain name ID.|
-|status|string|Domain name status.|
-|create_date|string|Domain name creation date.|
-|update_date|string|Domain name updated date.|
-|expire_date|string|Domain name expiration date.|
-|domain_age|integer|Domain name age in day(s).|
-|whois_server|string|WHOIS server name.|
-|registrar.iana_id|string|Registrar IANA ID.|
-|registrar.name|string|Registrar name.|
-|registrar.url|string|Registrar URL.|
-|registrant.name|string|Registrant name.|
-|registrant.organization|string|Registrant organization.|
-|registrant.street_address|string|Registrant street address.|
-|registrant.city|string|Registrant city.|
-|registrant.region|string|Registrant region.|
-|registrant.zip_code|string|Registrant ZIP Code.|
-|registrant.country|string|Registrant country.|
-|registrant.phone|string|Registrant phone number.|
-|registrant.fax|string|Registrant fax number.|
-|registrant.email|string|Registrant email address.|
-|admin.name|string|Admin name.|
-|admin.organization|string|Admin organization.|
-|admin.street_address|string|Admin street address.|
-|admin.city|string|Admin city.|
-|admin.region|string|Admin region.|
-|admin.zip_code|string|Admin ZIP Code.|
-|admin.country|string|Admin country.|
-|admin.phone|string|Admin phone number.|
-|admin.fax|string|Admin fax number.|
-|admin.email|string|Admin email address.|
-|tech.name|string|Tech name.|
-|tech.organization|string|Tech organization.|
-|tech.street_address|string|Tech street address.|
-|tech.city|string|Tech city.|
-|tech.region|string|Tech region.|
-|tech.zip_code|string|Tech ZIP Code.|
-|tech.country|string|Tech country.|
-|tech.phone|string|Tech phone number.|
-|tech.fax|string|Tech fax number.|
-|tech.email|string|Tech email address.|
-|billing.name|string|Billing name.|
-|billing.organization|string|Billing organization.|
-|billing.street_address|string|Billing street address.|
-|billing.city|string|Billing city.|
-|billing.region|string|Billing region.|
-|billing.zip_code|string|Billing ZIP Code.|
-|billing.country|string|Billing country.|
-|billing.phone|string|Billing phone number.|
-|billing.fax|string|Billing fax number.|
-|billing.email|string|Billing email address.|
-|nameservers|array|Name servers|
+**Windows Command Prompt:**
 
-```json
-{
-    "domain": "locaproxy.com",
-    "domain_id": "1710914405_DOMAIN_COM-VRSN",
-    "status": "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-    "create_date": "2012-04-03T02:34:32Z",
-    "update_date": "2021-12-03T02:54:57Z",
-    "expire_date": "2024-04-03T02:34:32Z",
-    "domain_age": 3863,
-    "whois_server": "whois.godaddy.com",
-    "registrar": {
-        "iana_id": "146",
-        "name": "GoDaddy.com, LLC",
-        "url": "https://www.godaddy.com"
-    },
-    "registrant": {
-        "name": "Registration Private",
-        "organization": "Domains By Proxy, LLC",
-        "street_address": "DomainsByProxy.com",
-        "city": "Tempe",
-        "region": "Arizona",
-        "zip_code": "85284",
-        "country": "US",
-        "phone": "+1.4806242599",
-        "fax": "+1.4806242598",
-        "email": "Select Contact Domain Holder link at https://www.godaddy.com/whois/results.aspx?domain=LOCAPROXY.COM"
-    },
-    "admin": {
-        "name": "Registration Private",
-        "organization": "Domains By Proxy, LLC",
-        "street_address": "DomainsByProxy.com",
-        "city": "Tempe",
-        "region": "Arizona",
-        "zip_code": "85284",
-        "country": "US",
-        "phone": "+1.4806242599",
-        "fax": "+1.4806242598",
-        "email": "Select Contact Domain Holder link at https://www.godaddy.com/whois/results.aspx?domain=LOCAPROXY.COM"
-    },
-    "tech": {
-        "name": "Registration Private",
-        "organization": "Domains By Proxy, LLC",
-        "street_address": "DomainsByProxy.com",
-        "city": "Tempe",
-        "region": "Arizona",
-        "zip_code": "85284",
-        "country": "US",
-        "phone": "+1.4806242599",
-        "fax": "+1.4806242598",
-        "email": "Select Contact Domain Holder link at https://www.godaddy.com/whois/results.aspx?domain=LOCAPROXY.COM"
-    },
-    "billing": {
-        "name": "",
-        "organization": "",
-        "street_address": "",
-        "city": "",
-        "region": "",
-        "zip_code": "",
-        "country": "",
-        "phone": "",
-        "fax": "",
-        "email": ""
-    },
-    "nameservers": ["vera.ns.cloudflare.com", "walt.ns.cloudflare.com"]
-}
+```bat
+set IP2LOCATION_API_KEY=YOUR_API_KEY
 ```
 
-### IP Hosted Domains Lookup function
-| Parameter | Type | Description |
-|---|---|---|
-|ip|string|IP address.|
-|total_domains|integer|Total number of hosted domains found.|
-|page|integer|Current lookup page.|
-|per_page|integer|Number of domains displayed in the page.|
-|total_pages|integer|Total pages of the hosted domains.|
-|domains|array|Hosted domains of the lookup IP Address.|
+The official examples pass a literal key to `Configuration.init`; the environment-variable approach below is an application-level adaptation, not an additional SDK method.
 
-```json
-{
-  "ip": "8.8.8.8",
-  "total_domains": 3858,
-  "page": 1,
-  "per_page": 100,
-  "total_pages": 39,
-  "domains": [
-    "000180.top",
-    "00100tet.xyz",
-    "001hash.vip",
-    "002hash.com",
-    "0050500.xyz",
-    "007515.com",
-    "023mm.net",
-    "023mt.net",
-    "023sn.net",
-    "031000.xyz",
-    "0515smw.com",
-    "058637.com",
-    "0798907.xyz",
-    "07capital.com",
-    "07osrs.com",
-    "07sh2wv.bar",
-    "0857.site",
-    "0931seo.com",
-    "0lzh.com",
-    "0x4f.com",
-    "0x57696c6c.com",
-    "0xb055.com",
-    "1-189tais.com",
-    "10askfcwebkvh.top",
-    "1102halfhowehbao1.com",
-    "1102hdfkeuwuhfubao2.com",
-    "1102hdukefjkf2.com",
-    "1102sdbkwuoubao3.com",
-    "11107hdkjhguk.com",
-    "111km.xyz",
-    "1130kfhuhw.com",
-    "11eqlhon.top",
-    "1206m.site",
-    "125ap.com",
-    "12la21wn31da40le6.com",
-    "12safhoie.top",
-    "12tivi.com",
-    "1333limited.com",
-    "1333yyh.com",
-    "135493.com",
-    "136668.xyz",
-    "13shkuwq.top",
-    "142937440.site",
-    "144888.xyz",
-    "14whoduhw.top",
-    "1562yjargm.xyz",
-    "15sdkwb.top",
-    "167853.xyz",
-    "168.one",
-    "168km.xyz",
-    "16uhwfuhe.cyou",
-    "176274.com",
-    "17diqwehfoi.cyou",
-    "17jule.com",
-    "18uhefoh.cyou",
-    "191095211.xyz",
-    "19931006.xyz",
-    "19g.vip",
-    "19wuji.cyou",
-    "1huofhoehfogakfwqqq.com",
-    "1ine1.com",
-    "1master-fitness.com",
-    "1rf3k.com",
-    "1s1s.app",
-    "1visualizer.app",
-    "200250.xyz",
-    "20070217.xyz",
-    "20088888.xyz",
-    "20230406.mov",
-    "205566.com",
-    "205artemisbet.com",
-    "20iiij.cyou",
-    "21107ahsfukhweo.com",
-    "21hodheoh.cyou",
-    "22bahman.space",
-    "22howhw.cyou",
-    "231q.top",
-    "234n.top",
-    "236j.top",
-    "23hw.cyou",
-    "24asfbkhb.cyou",
-    "24ihhcorp.com",
-    "25dgfu.cyou",
-    "26asfhku.cyou",
-    "277210.shop",
-    "27adfljn.cyou",
-    "28dshkf.cyou",
-    "29583.biz",
-    "29dakfb.cyou",
-    "2ashdowehofhweohfo.com",
-    "2c.com",
-    "2qdrap.com",
-    "2s1c.com",
-    "304065117.xyz",
-    "30fwhdfkb.cyou",
-    "3101r.space",
-    "31107abskjfbekb.com",
-    "315sx.com",
-    "31dfhkjsdb.cyou",
-    "325965.com"
-  ]
-}
+## Quickstart: IP geolocation lookup
+
+The official quickstart uses `Configuration.init` and `Ip_geolocation.lookup`, which returns an HTTP status code and parsed JSON. The example below retains those documented calls while taking the API key from an environment variable.
+
+Create an OCaml executable in a Dune project that depends on the `ip2locationio` and `yojson` libraries:
+
+```ocaml
+open Printf
+open Ip2locationio
+
+let () =
+  let api_key = Sys.getenv "IP2LOCATION_API_KEY" in
+  let config = Configuration.init api_key in
+  let code, json = Ip_geolocation.lookup config "8.8.8.8" "" in
+  if code = 200 then begin
+    let open Yojson.Basic.Util in
+    printf "IP: %s\n" (json |> member "ip" |> to_string);
+    printf "Country: %s\n" (json |> member "country_name" |> to_string);
+    printf "City: %s\n" (json |> member "city_name" |> to_string)
+  end else
+    printf "HTTP Code: %d\n" code
 ```
 
-LICENCE
-=====================
-See the LICENSE file.
+For example, when adding a `lookup.ml` file to an existing Dune project with the SDK available, its `dune` executable stanza can include:
+
+```lisp
+(executable
+ (name lookup)
+ (libraries ip2locationio yojson))
+```
+
+Run it from the project root with:
+
+```bash
+dune exec ./lookup.exe
+```
+
+**Setup note:** This executable example assumes the OCaml project can resolve the `ip2locationio` library (for instance, when developed within the SDK source tree or after installing the package into the active opam switch). The repository's documented minimal build command is `dune build`; adapt the executable name and location to your project.
+
+The returned JSON fields depend on the IP address and plan. See the [OCaml API field reference](https://ip2location-io-ocaml.readthedocs.io/en/latest/code.html).
+
+## OCaml responses and JSON fields
+
+Unlike SDKs that return model objects directly, the documented OCaml lookups return a pair such as `code, json`. Check the HTTP status before extracting the response with `Yojson.Basic.Util`. Optional JSON fields can be `Null`; check them before using strict converters such as `to_string`, `to_int`, or `to_bool`.
+
+All the following lookup examples assume:
+
+```ocaml
+open Printf
+open Ip2locationio
+
+let config = Configuration.init (Sys.getenv "IP2LOCATION_API_KEY")
+```
+
+These are independent snippets to place in your own program after the shared initialization.
+
+## More usage examples
+
+### Request translated location names
+
+The third argument to `Ip_geolocation.lookup` is a language code. The official quickstart uses `"es"` for Spanish, with translation support on **Plus and Security** plans.
+
+```ocaml
+let code, json = Ip_geolocation.lookup config "8.8.8.8" "es" in
+if code = 200 then
+  print_endline (Yojson.Basic.pretty_to_string json)
+```
+
+Use `""` when translated names are not needed.
+
+### Inspect ASN and ISP information
+
+The documented geolocation response can include `asn`, `as`, `isp` and plan-dependent `as_info` details.
+
+```ocaml
+let code, json = Ip_geolocation.lookup config "8.8.8.8" "" in
+if code = 200 then begin
+  let open Yojson.Basic.Util in
+  let show key =
+    match member key json with
+    | `String value -> value
+    | _ -> "N/A"
+  in
+  printf "ASN: %s\n" (show "asn");
+  printf "AS: %s\n" (show "as");
+  printf "ISP: %s\n" (show "isp")
+end
+```
+
+This shorter extraction example is adapted from the response fields in the official geolocation quickstart.
+
+### Inspect available proxy indicators
+
+Some proxy fields are unavailable for certain plans or responses. The following additional example checks the nested JSON object before reading the flags.
+
+```ocaml
+let code, json = Ip_geolocation.lookup config "8.8.8.8" "" in
+if code = 200 then begin
+  let open Yojson.Basic.Util in
+  let proxy = member "proxy" json in
+  if proxy <> `Null then begin
+    let show_flag name =
+      match member name proxy with
+      | `Bool value -> string_of_bool value
+      | _ -> "N/A"
+    in
+    printf "VPN: %s\n" (show_flag "is_vpn");
+    printf "Tor: %s\n" (show_flag "is_tor")
+  end else
+    print_endline "Proxy details unavailable."
+end
+```
+
+### Look up domain WHOIS information
+
+`Domain_whois.lookup` is demonstrated in the official quickstart. WHOIS attributes, including registration and contact data, may be absent or redacted.
+
+```ocaml
+let code, json = Domain_whois.lookup config "google.com" in
+if code = 200 then begin
+  let open Yojson.Basic.Util in
+  let show key =
+    match member key json with
+    | `String value -> value
+    | _ -> "N/A"
+  in
+  printf "Domain: %s\n" (show "domain");
+  printf "Created: %s\n" (show "create_date");
+  printf "Expires: %s\n" (show "expire_date");
+  let registrar = member "registrar" json in
+  (match member "name" registrar with
+   | `String name -> printf "Registrar: %s\n" name
+   | _ -> print_endline "Registrar: N/A")
+end
+```
+
+See the [WHOIS API reference](https://ip2location-io-ocaml.readthedocs.io/en/latest/code.html) for other fields, including nameservers.
+
+### Extract a domain name or extension
+
+The official quickstart includes these helper functions, which do not require a network lookup:
+
+```ocaml
+let domain_name = Domain_whois.get_domain_name "https://www.example.com/exe" in
+printf "Domain name: %s\n" domain_name;
+
+let extension = Domain_whois.get_domain_extension "example.com" in
+printf "Domain extension: %s\n" extension
+```
+
+The OCaml documentation demonstrates **domain name and extension helpers**; it does not document Punycode conversion helpers for this SDK.
+
+### Find domains hosted on an IP address
+
+`Hosted_domain.lookup` accepts a configuration, IP address and page number. The official quickstart uses page `1`.
+
+```ocaml
+let code, json = Hosted_domain.lookup config "8.8.8.8" 1 in
+if code = 200 then begin
+  let open Yojson.Basic.Util in
+  let total_domains = json |> member "total_domains" |> to_int in
+  printf "Total domains: %d\n" total_domains;
+  (match member "domains" json with
+   | `List domains ->
+       List.iter
+         (function `String domain -> print_endline domain | _ -> ())
+         domains
+   | _ -> ())
+end
+```
+
+Request page `2`, `3`, and so on when more pages are available. Responses may include `page`, `per_page` and `total_pages`.
+
+## OCaml and Dune troubleshooting
+
+- **Missing package or module:** Confirm the active opam switch and install dependencies using `opam install . --deps-only` from the cloned SDK directory. Use `opam exec -- dune build` if your shell is not configured for the switch.
+- **Dune version mismatch:** The `.opam` manifest requires Dune 3.4 or later; verify with `dune --version`.
+- **Missing API key:** Check that `IP2LOCATION_API_KEY` is defined in the shell that runs the executable. The official code uses `Configuration.init "YOUR_API_KEY"` as a simpler alternative.
+- **Unexpected missing fields:** API plans and IP addresses may return different JSON structures. Check for `Null` values before calling strict JSON conversion functions.
+- **Non-200 status:** The official samples examine the returned HTTP status code and, for 400/401 responses, the API's `error.error_message` field. Check the API key, quota and request before retrying.
+
+## Common use cases
+
+- **Website and application localization:** Choose suggested region-aware language, content or currency using approximate IP location.
+- **Traffic analytics:** Enrich application events with country, city, ASN and ISP data.
+- **Security review:** Consider available proxy, VPN, Tor and other signals as part of a broader risk assessment, not the sole basis for blocking users.
+- **Domain research:** Retrieve domain registration dates, registrar information and nameservers from WHOIS results.
+- **Network and hosting research:** Investigate ASNs, ISPs and domains hosted on specific IP addresses.
+
+## Documentation and support
+
+- [OCaml SDK quickstart and official sample code](https://ip2location-io-ocaml.readthedocs.io/en/latest/quickstart.html)
+- [OCaml API reference and response fields](https://ip2location-io-ocaml.readthedocs.io/en/latest/code.html)
+- [Official GitHub repository](https://github.com/ip2location/ip2location-io-ocaml)
+- [OCaml package manifest and dependencies](https://github.com/ip2location/ip2location-io-ocaml/blob/main/ip2locationio.opam)
+- [IP2Location.io API plans and query limits](https://www.ip2location.io/pricing)
+- [IP Geolocation API documentation](https://www.ip2location.io/ip2location-documentation)
+- [Report an OCaml SDK issue or request a feature](https://github.com/ip2location/ip2location-io-ocaml/issues)
+- [API and account support](https://www.ip2location.io/contact-us)
+
+## License
+
+Licensed under the **MIT License**. See [LICENSE](./LICENSE).
